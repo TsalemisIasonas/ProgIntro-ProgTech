@@ -6,16 +6,16 @@ template <typename T>
 class stack {
 public:
     stack(int size) {
-        this->size = 0;
+        this->stack_size = 0;
         this->capacity = size;
         this->arr = new T[capacity];
     }
 
     stack(const stack &s) {
-        this->size = s.size;
+        this->stack_size = s.stack_size;
         this->capacity = s.capacity;
         this->arr = new T[capacity];
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < stack_size; i++) {
             arr[i] = s.arr[i];
         }
     }
@@ -27,10 +27,10 @@ public:
     const stack &operator=(const stack &s) {
         if (this != &s) {
             delete [] arr;
-            this->size = s.size;
+            this->stack_size = s.stack_size;
             this->capacity = s.capacity;
             this->arr = new T[capacity];
-            for (int i = 0; i < size; i++) {
+            for (int i = 0; i < stack_size; i++) {
                 arr[i] = s.arr[i];
             }
         }
@@ -38,39 +38,39 @@ public:
     }
 
     bool empty() {
-        return size == 0;
+        return stack_size == 0;
     }
 
     void push(const T &x) {
-        if (size == capacity) {
+        if (stack_size == capacity) {
             T *new_arr = new T[2*capacity];
-            for (int i = 0; i < size; i++) {
+            for (int i = 0; i < stack_size; i++) {
                 new_arr[i] = arr[i];
             }
             delete [] arr;
             arr = new_arr;
             capacity *= 2;
         }
-        arr[size] = x;
-        size++;
+        arr[stack_size] = x;
+        stack_size++;
     }
 
     T pop() {
-        if (size == 0) {
+        if (stack_size == 0) {
             throw "Stack is empty";
         }
         else {
-            size--;
-            return arr[size];
+            stack_size--;
+            return arr[stack_size];
         }
     }
 
     int size() {
-        return size;
+        return stack_size;
     }
 
     friend ostream &operator<<(ostream &out, const stack &s) {
-        for (int i = s.size-1; i >= 0; i--) {
+        for (int i = s.stack_size-1; i >= 0; i--) {
             out << s.arr[i] << " ";
         }
         return out;
@@ -78,7 +78,7 @@ public:
 
 private:
     T *arr;
-    int size;
+    int stack_size;
     int capacity;
 };
 
