@@ -3,8 +3,7 @@
 using namespace std;
 
 template <typename T>
-class stack
-{
+class stack{
 public:
     stack(int size){
         this->stackSize = size;
@@ -16,6 +15,7 @@ public:
         cout << "An object dies" <<endl;
     }
     const stack &operator=(const stack &s) {
+        // TODO: implement assignment operator
         return s;
     }
 
@@ -27,17 +27,14 @@ public:
     // int size() {}
 
     friend ostream &operator<<(ostream &out, const stack &s) {
-        out<< s;
+        out<< s<< endl;
         return out;
     }
 
 private:
     int stackSize;
-    stack s;
+    stack<T> s[stackSize];
 };
-
-
-
 
 #ifndef CONTEST
  int main () {
