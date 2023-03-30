@@ -29,9 +29,7 @@ public:
 
     const stack &operator=(const stack &s)
     {
-        this->stackSize = s.stackSize;
-        this->requestedSize = s.requestedSize;
-        this->s = new T[requestedSize];
+        this->s = new T[s.requestedSize];
         std::copy(s.s, s.s + stackSize, this->s);
         return *this;
     }
