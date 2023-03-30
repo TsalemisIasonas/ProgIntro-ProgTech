@@ -28,6 +28,8 @@ public:
         delete[] s;
     }
 
+    const stack &operator=(const stack &s) {}
+
     bool empty()
     {
         if (stackSize != 0)
@@ -41,7 +43,7 @@ public:
         }
     }
 
-    // T pop() {}
+    T pop() {}
     int size()
     {
         return stackSize;
@@ -70,16 +72,15 @@ int main()
     cout << "s is empty: " << s << endl;
     s.push(42);
     cout << "s has one element: " << s << endl;
-    //  s.push(17);
-    //  s.push(34);
-    //  cout << "s has more elements: " << s << endl;
+    s.push(17);
+    s.push(34);
+    cout << "s has more elements: " << s << endl;
     cout << "How many? " << s.size() << endl;
-    //  stack<int> t(5);
-    //  t.push(7);
-    //  cout << "t: " << t << endl;
-    //  t = s;
-    // cout << "popping from s: " << s.pop() << endl;
-
+     stack<int> t(5);
+     t.push(7);
+     cout << "t: " << t << endl;
+     t = s;
+    cout << "popping from s: " << s.pop() << endl;
     //  s.push(8);
     //  stack<int> a(s);
     //  t.push(99);
