@@ -20,7 +20,6 @@ public:
         for (int i = 0; i < requestedSize; i++)
         {
             this->s[i] = s.s[i];
-            // stackSize++;
         }
     }
     ~stack()
@@ -30,9 +29,16 @@ public:
 
     const stack &operator=(const stack &s)
     {
-        for (int i = 0; i < s.stackSize; i++)
+        if (this != &s)
         {
-            this->s[i] = s.s[i];
+            delete[] arr;
+            this->stack_size = s.stack_size;
+            this->capacity = s.capacity;
+            this->arr = new T[capacity];
+            for (int i = 0; i < stack_size; i++)
+            {
+                arr[i] = s.arr[i];
+            }
         }
         return *this;
     }
@@ -74,7 +80,7 @@ public:
             }
             out << s.s[s.stackSize - 1];
         }
-        out << ']' << endl;
+        out << ']';
         return out;
     }
 
