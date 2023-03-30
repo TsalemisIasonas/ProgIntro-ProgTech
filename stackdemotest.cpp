@@ -3,87 +3,96 @@
 using namespace std;
 
 template <typename T>
-class stack {
+class stack
+{
 public:
-    stack(int size) {
-        this->stack_size = 0;
-        this->capacity = size;
-        this->arr = new T[capacity];
+    stack(int size)
+    {
+        this->stackSize = 0;
+        this->requestedSize = size;
+        this->s = new T[requestedSize];
     }
-
-    stack(const stack &s) {
-        this->stack_size = s.stack_size;
-        this->capacity = s.capacity;
-        this->arr = new T[capacity];
-        for (int i = 0; i < stack_size; i++) {
-            arr[i] = s.arr[i];
+    stack(const stack &s)
+    {
+        this->stackSize = s.stackSize;
+        this->requestedSize = s.requestedSize;
+        this->s = new T[requestedSize];
+        for (int i = 0; i < requestedSize; i++)
+        {
+            this->s[i] = s.s[i];
         }
     }
-
-    ~stack() {
-        delete [] arr;
+    ~stack()
+    {
+        delete[] s;
     }
 
-    const stack &operator=(const stack &s) {
-        if (this != &s) {
-            delete [] arr;
-            this->stack_size = s.stack_size;
-            this->capacity = s.capacity;
-            this->arr = new T[capacity];
-            for (int i = 0; i < stack_size; i++) {
-                arr[i] = s.arr[i];
+    const stack &operator=(const stack &s)
+    {
+        if (this != &s)
+        {
+            delete[] this->s;
+            this->stackSize = s.stackSize;
+            this->requestedSize = s.requestedSize;
+            this->s = new T[requestedSize];
+            for (int i = 0; i < stackSize; i++)
+            {
+                this->s[i] = s.s[i];
             }
         }
         return *this;
     }
 
-    bool empty() {
-        return stack_size == 0;
+    bool empty()
+    {
+        if (stackSize != 0)
+            return false;
+        return true;
+    }
+    void push(const T &x)
+    {
+        if (stackSize < requestedSize)
+        {
+            s[stackSize] = x;
+            stackSize++;
+        }
     }
 
-    void push(const T &x) {
-        if (stack_size == capacity) {
-            T *new_arr = new T[2*capacity];
-            for (int i = 0; i < stack_size; i++) {
-                new_arr[i] = arr[i];
+    T pop()
+    {
+        stackSize -= 1;
+        T lastElement = s[stackSize];
+        return lastElement;
+    }
+    int size()
+    {
+        return stackSize;
+    }
+
+    friend ostream &operator<<(ostream &out, const stack &s)
+    {
+        out << '[';
+        if (s.stackSize > 0)
+        {
+            for (int i = 0; i < s.stackSize - 1; i++)
+            {
+                out << s.s[i] << ", ";
             }
-            delete [] arr;
-            arr = new_arr;
-            capacity *= 2;
+            out << s.s[s.stackSize - 1];
         }
-        arr[stack_size] = x;
-        stack_size++;
-    }
-
-    T pop() {
-        if (stack_size == 0) {
-            throw "Stack is empty";
-        }
-        else {
-            stack_size--;
-            return arr[stack_size];
-        }
-    }
-
-    int size() {
-        return stack_size;
-    }
-
-    friend ostream &operator<<(ostream &out, const stack &s) {
-        for (int i = s.stack_size-1; i >= 0; i--) {
-            out << s.arr[i] << " ";
-        }
+        out << ']';
         return out;
     }
 
 private:
-    T *arr;
-    int stack_size;
-    int capacity;
+    int stackSize;
+    int requestedSize;
+    T *s;
 };
 
 #ifndef CONTEST
-int main() {
+int main()
+{
     // let's play with integers...
     stack<int> s(10);
     cout << "s is empty: " << s << endl;
