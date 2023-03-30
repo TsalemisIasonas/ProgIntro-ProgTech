@@ -16,19 +16,19 @@ public:
         this->s = new T[requestedSize];
         for (int i=0; i<requestedSize; i++){
             this->s[i] = s.s[i];
+            stackSize++;
         }
     }
     ~stack() {}
-    // const stack &operator=(const stack &s) {
-    //     // TODO: implement assignment operator
-    //     return s;
-    // }
 
     bool empty() {
+        if (stackSize==0) return false;
         return true;
     }
     void push(const T &x){
-
+        int index = requestedSize-stackSize;
+        s[index] = x;
+        stackSize++;
     } 
     // T pop() {}
     int size() {
