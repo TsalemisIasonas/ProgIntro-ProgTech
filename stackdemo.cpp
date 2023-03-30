@@ -28,7 +28,12 @@ public:
         delete[] s;
     }
 
-    const stack &operator=(const stack &s) {}
+    const stack &operator=(const stack &s) {
+        for (int i=0; i<s.stackSize; i++){
+            this->s[i] = s.s[i];
+        }
+        return *this;
+    }
 
     bool empty()
     {
@@ -43,7 +48,11 @@ public:
         }
     }
 
-    T pop() {}
+    T pop() {
+        T lastElement = s[stackSize];
+        stackSize-=1;
+        return lastElement;
+    }
     int size()
     {
         return stackSize;
