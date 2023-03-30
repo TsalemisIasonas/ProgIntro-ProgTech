@@ -9,14 +9,18 @@ public:
     stack(int size){
         this->stackSize = size;
     } 
-    stack(const stack &s) {}
-    ~stack() {}
+    stack(const stack &s) {
+        this->s = s;
+    }
+    ~stack() {
+        cout << "An object dies" <<endl;
+    }
     const stack &operator=(const stack &s) {
         return s;
     }
 
     bool empty() {
-        return False;
+        return true;
     }
     // void push(const T &x){} 
     // T pop() {}
@@ -24,11 +28,12 @@ public:
 
     friend ostream &operator<<(ostream &out, const stack &s) {
         out<< s;
-        return out
+        return out;
     }
 
 private:
     int stackSize;
+    stack s;
 };
 
 
