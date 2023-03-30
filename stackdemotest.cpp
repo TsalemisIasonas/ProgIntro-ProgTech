@@ -29,16 +29,18 @@ public:
 
     const stack &operator=(const stack &s)
     {
-        if (this != &s)
-        {
+        if (this != &s) 
+        {    
+            T *temp = new T[s.requestedSize];
+            for (int i = 0; i < s.stackSize; ++i)
+            {
+                temp[i] = s.s[i];
+            }
+            
             delete[] this->s;
             this->stackSize = s.stackSize;
             this->requestedSize = s.requestedSize;
-            this->s = new T[requestedSize];
-            for (int i = 0; i < stackSize; i++)
-            {
-                this->s[i] = s.s[i];
-            }
+            this->s = temp;
         }
         return *this;
     }
@@ -53,8 +55,7 @@ public:
     {
         if (stackSize < requestedSize)
         {
-            s[stackSize] = x;
-            stackSize++;
+            *(s + stackSize++) = x;
         }
     }
 
