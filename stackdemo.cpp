@@ -6,34 +6,46 @@ template <typename T>
 class stack{
 public:
     stack(int size){
-        this->stackSize = size;
+        this->stackSize = 0;
+        this->requestedSize = size;
+        this->s = new T[requestedSize];
     } 
     stack(const stack &s) {
-        this->s = s;
+        this->stackSize = s.stackSize;
+        this->requestedSize = s.requestedSize;
+        this->s = new T[requestedSize];
+        for (int i=0; i<requestedSize; i++){
+            this->s[i] = s.s[i];
+        }
     }
-    ~stack() {
-        cout << "An object dies" <<endl;
-    }
-    const stack &operator=(const stack &s) {
-        // TODO: implement assignment operator
-        return s;
-    }
+    ~stack() {}
+    // const stack &operator=(const stack &s) {
+    //     // TODO: implement assignment operator
+    //     return s;
+    // }
 
     bool empty() {
         return true;
     }
-    // void push(const T &x){} 
+    void push(const T &x){
+
+    } 
     // T pop() {}
-    // int size() {}
+    int size() {
+        return stackSize;
+    }
 
     friend ostream &operator<<(ostream &out, const stack &s) {
-        out<< s<< endl;
+        for (int i=0; i<s.stackSize; i++){
+            out << s.s[i];
+        }
         return out;
     }
 
 private:
     int stackSize;
-    stack<T> s[stackSize];
+    int requestedSize;
+    T* s;
 };
 
 #ifndef CONTEST
@@ -41,12 +53,12 @@ private:
  // let’s play with integers...
  stack<int> s(10);
  cout << "s is empty: " << s << endl;
-//  s.push(42);
-//  cout << "s has one element: " << s << endl;
+ s.push(42);
+ cout << "s has one element: " << s << endl;
 //  s.push(17);
 //  s.push(34);
 //  cout << "s has more elements: " << s << endl;
-//  cout << "How many? " << s.size() << endl;
+ cout << "How many? " << s.size() << endl;
 //  stack<int> t(5);
 //  t.push(7);
 //  cout << "t: " << t << endl;
