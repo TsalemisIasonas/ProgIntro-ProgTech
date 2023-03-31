@@ -17,7 +17,7 @@ public:
         this->stackSize = s.stackSize;
         this->requestedSize = s.requestedSize;
         this->s = new T[requestedSize];
-        for (int i = 0; i < requestedSize; i++)
+        for (int i = 0; i < stackSize; i++)
         {
             this->s[i] = s.s[i];
         }
@@ -29,12 +29,16 @@ public:
 
     const stack &operator=(const stack &s)
     {
-        delete[] this->s;
-        this->s = new T[s.requestedSize];
-        for (int i = 0; i < stackSize; i++)
+        if (this != &s) // check for self-assignment
         {
-            //T val = s.s[i];
-            this->push(s.s[i]);
+            delete[] this->s;
+            this->stackSize = 0; // reset stackSize
+            this->requestedSize = s.requestedSize;
+            this->s = new T[requestedSize];
+            for (int i = 0; i < s.stackSize; i++)
+            {
+                this->push(s.s[i]);
+            }
         }
         return *this;
     }

@@ -29,6 +29,20 @@ public:
 
     const stack &operator=(const stack &s)
     {
+        if (this != &s) // check for self-assignment
+        {
+            delete[] this->s;
+            this->stackSize = 0; // reset stackSize
+            this->requestedSize = s.requestedSize;
+            this->s = new T[requestedSize];
+            for (int i = 0; i < s.stackSize; i++)
+            {
+                this->push(s.s[i]);
+            }
+        }
+        return *this;
+    }
+    {
 
         delete[] this->s;
         this->stackSize = s.stackSize;
