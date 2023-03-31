@@ -29,8 +29,13 @@ public:
 
     const stack &operator=(const stack &s)
     {
+        delete[] this->s;
         this->s = new T[s.requestedSize];
-        std::copy(s.s, s.s + stackSize, this->s);
+        for (int i = 0; i < stackSize; i++)
+        {
+            //T val = s.s[i];
+            this->push(s.s[i]);
+        }
         return *this;
     }
 
@@ -51,8 +56,7 @@ public:
     T pop()
     {
         stackSize -= 1;
-        T lastElement = s[stackSize];
-        return lastElement;
+        return s[stackSize];
     }
     int size()
     {

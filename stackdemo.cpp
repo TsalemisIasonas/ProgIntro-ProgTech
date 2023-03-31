@@ -31,10 +31,12 @@ public:
     {
 
         delete[] this->s;
-        this->s = new T[s.requestedSize];
+        this->stackSize = s.stackSize;
+        this->requestedSize = s.requestedSize;
+        this->s = new T[requestedSize];
         for (int i = 0; i < stackSize; i++)
         {
-            this->s[i] = s.s[i];
+            this->push(s.s[i]);
         }
         return *this;
     }
@@ -47,9 +49,8 @@ public:
     }
     void push(const T &x)
     {
-            s[stackSize] = x;
-            stackSize++;
-
+        s[stackSize] = x;
+        stackSize++;
     }
 
     T pop()
@@ -83,4 +84,3 @@ private:
     int requestedSize;
     T *s;
 };
-
