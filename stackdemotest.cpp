@@ -6,71 +6,72 @@ template <typename T>
 class stack {
 public:
     stack(int size) {
-        this->max_size = size;
-        this->data = new T[max_size];
-        this->top_index = -1;
+        stackSize = size;
+        myStack = new T[stackSize];
+        topElement = -1;
     }
 
     stack(const stack &s) {
-        this->max_size = s.max_size;
-        this->data = new T[max_size];
-        this->top_index = s.top_index;
-        for (int i = 0; i <= top_index; i++) {
-            this->data[i] = s.data[i];
+        stackSize = s.stackSize;
+        myStack = new T[stackSize];
+        topElement = s.topElement;
+        for (int i = 0; i <= topElement; i++) {
+            myStack[i] = s.myStack[i];
         }
     }
 
     ~stack() {
-        delete[] data;
+        delete[] myStack;
     }
 
     const stack &operator=(const stack &s) {
         if (this != &s) {
-            delete[] this->data;
-            this->max_size = s.max_size;
-            this->data = new T[max_size];
-            this->top_index = s.top_index;
-            for (int i = 0; i <= top_index; i++) {
-                this->data[i] = s.data[i];
+            delete[] myStack;
+            stackSize = s.stackSize;
+            myStack = new T[stackSize];
+            topElement = s.topElement;
+            for (int i = 0; i <= topElement; i++) {
+                myStack[i] = s.myStack[i];
             }
         }
         return *this;
     }
 
-    bool empty() {
-        return top_index == -1;
+    bool empty()const{
+        return topElement == -1;
     }
 
     void push(const T &x) {
-        data[++top_index] = x;
+        myStack[++topElement] = x;
     }
 
     T pop() {
-        return data[top_index--];
+        return myStack[topElement--];
     }
 
     int size() {
-        return top_index + 1;
+        return topElement + 1;
     }
 
-friend ostream& operator<<(ostream& out, const stack& s) {
-    out << "[";
-    if (!s.empty()) {
-        out << s.data[0];
-        for (int i = 1; i <= s.top_index; i++) {
-            out << ", " << s.data[i];
+    friend ostream &operator<<(ostream &out, const stack &s) {
+        out << "[";
+        if (!s.empty()) {
+            out << s.myStack[0];
+            for (int i = 1; i <= s.topElement; i++) {
+                out << ", " << s.myStack[i];
+            }
         }
+        out << "]";
+        return out;
     }
-    out << "]";
-    return out;
-}
 
 
 private:
-    T *data;
-    int max_size;
-    int top_index;
+    T *myStack;
+    int stackSize;
+    int topElement;
 };
+
 
 #ifndef CONTEST
 int main()

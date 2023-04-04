@@ -37,7 +37,7 @@ public:
         return *this;
     }
 
-    bool empty() {
+    bool empty()const{
         return topElement == -1;
     }
 
