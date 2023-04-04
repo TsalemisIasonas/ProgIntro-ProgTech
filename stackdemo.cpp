@@ -1,88 +1,73 @@
-#include <iostream>  
-  
-using namespace std;  
-  
-template <typename T>  
-class stack  
-{  
-public:  
-    stack(int size)  
-    {  
-        this->stackSize = 0;  
-        this->requestedSize = size;  
-        this->s = new T[requestedSize];  
-    }  
-    stack(const stack &s)  
-    {  
-        this->stackSize = s.stackSize;  
-        this->requestedSize = s.requestedSize;  
-        this->s = new T[requestedSize];  
-        for (int i = 0; i < requestedSize; i++)  
-        {  
-            this->s[i] = s.s[i];  
-        }  
-    }  
-    ~stack()  
-    {  
-        delete[] s;  
-    }  
-  
-    const stack &operator=(const stack &s)  
-    {  
-  
-        delete[] this->s;  
-        this->stackSize = s.stackSize;  
-        this->requestedSize = s.requestedSize;  
-        this->s = new T[requestedSize];  
-        for (int i = 0; i < stackSize; i++)  
-        {  
-            this->s[i] = s.s[i];  
-        }  
-        return *this;  
-    }  
-  
-    bool empty()  
-    {  
-        if (stackSize != 0)  
-            return false;  
-        return true;  
-    }  
-    void push(const T &x)  
-    {  
-        if (stackSize < requestedSize)  
-        {  
-            s[stackSize] = x;  
-            stackSize++;  
-        }  
-    }  
-  
-    T pop()  
-    {  
-        stackSize -= 1;  
-        return s[stackSize];  
-    }  
-    int size()  
-    {  
-        return stackSize;  
-    }  
-  
-    friend ostream &operator<<(ostream &out, const stack &s)  
-    {  
-        out << '[';  
-        if (s.stackSize > 0)  
-        {  
-            for (int i = 0; i < s.stackSize - 1; i++)  
-            {  
-                out << s.s[i] << ", ";  
-            }  
-            out << s.s[s.stackSize - 1];  
-        }  
-        out << ']';  
-        return out;  
-    }  
-  
-private:  
-    int stackSize;  
-    int requestedSize;  
-    T* s;  
+#include <iostream>
+
+using namespace std;
+
+template <typename T>
+class stack {
+public:
+    stack(int size) {
+        stackSize = size;
+        myStack = new T[stackSize];
+        topElement = -1;
+    }
+
+    stack(const stack &s) {
+        stackSize = s.stackSize;
+        myStack = new T[stackSize];
+        topElement = s.topElement;
+        for (int i = 0; i <= topElement; i++) {
+            myStack[i] = s.myStack[i];
+        }
+    }
+
+    ~stack() {
+        delete[] myStack;
+    }
+
+    const stack &operator=(const stack &s) {
+        if (this != &s) {
+            delete[] myStack;
+            stackSize = s.stackSize;
+            myStack = new T[stackSize];
+            topElement = s.topElement;
+            for (int i = 0; i <= topElement; i++) {
+                myStack[i] = s.myStack[i];
+            }
+        }
+        return *this;
+    }
+
+    bool empty() {
+        return topElement == -1;
+    }
+
+    void push(const T &x) {
+        myStack[++topElement] = x;
+    }
+
+    T pop() {
+        return myStack[topElement--];
+    }
+
+    int size() {
+        return topElement + 1;
+    }
+
+    friend ostream &operator<<(ostream &out, const stack &s) {
+        out << "[";
+        if (!s.empty()) {
+            out << s.myStack[0];
+            for (int i = 1; i <= s.topElement; i++) {
+                out << ", " << s.myStack[i];
+            }
+        }
+        out << "]";
+        return out;
+    }
+
+
+private:
+    T *myStack;
+    int stackSize;
+    int topElement;
 };
