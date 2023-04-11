@@ -27,7 +27,7 @@ public:
     void next(const Move &move) throw(logic_error);
     bool winning() const;
 
-    int getHeaps() const;
+    int getHeaps() const;   
     int getCoins(int h) const throw(logic_error);
 
     int getPlayers() const;
