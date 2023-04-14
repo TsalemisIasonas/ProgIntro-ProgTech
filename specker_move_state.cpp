@@ -40,8 +40,9 @@ public:
 
 private:
     int h;
-    const int *c;
+    int *c;
     int n;
+    int player = 0;
 };
 
 Move::Move(int sh, int sc, int th, int tc) : sh(sh), sc(sc), th(th), tc(tc) {}
@@ -63,8 +64,26 @@ ostream &operator<<(ostream &out, const Move &move)
     return out;
 }
 
-State::State(int h, const int c[], int n) : h(h), c(c), n(n) {}
-State::~State() { delete c; }
+State::State(int h, const int c[], int n) : h(h), c(new int[h]), n(n) {}
+State::~State() {delete[] c;}
+
+void State::next(const Move &move) throw(logic_error){
+    if (move.getSource()<0 || move.getSource()>=h || move.getTarget()<0 || move.getTarget()>=h){
+        throw logic_error("invalid heap");
+    }
+    else if (move.getSourceCoins()<0 || move.getTargetCoins()<=0 || move.getTargetCoins()>=move.getSourceCoins()){
+        throw logic_error("invalid coins");
+    }
+
+    else {
+        c[move.getSource()]-=move.getSourceCoins();
+        c[move.getTarget()]+=move.getTargetCoins();
+
+        if (player > n) player = 0;
+        else player ++;
+    }
+}
+
 bool State::winning() const {
     for (int i=0; i<h; i++){
         if (c[i] != 0) return false;
@@ -74,18 +93,20 @@ bool State::winning() const {
 int State::getHeaps() const { return h; }
 int State::getCoins(int h) const throw(logic_error)
 {
-    if (h < 0 || h > this->h)
+    if (h < 0 || h >= this->h)
         throw logic_error("invalid heap");
     else
         return c[h];
 }
 int State::getPlayers() const { return n; }
+int State::getPlaying() const { return player;}
 
-
-int main()
-{
-    int array[6] = {1, 2, 3, 4, 5, 6};
-    State state = State(4, array, 5);
-    int val = state.getCoins(3);
-    cout << val;
+ostream &operator<<(ostream &out, const State &state){
+    out << state.c[0];
+    for (int i=1; i<state.h; i++){
+        out  << ", " << state.c[i];
+    }
+    out << " with " << state.getPlaying() << '/' << state.getPlayers() << " playing";
+    return out;
 }
+
