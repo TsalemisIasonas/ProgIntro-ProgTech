@@ -75,7 +75,7 @@ void State::next(const Move &move) throw(logic_error){
     if (move.getSource()<0 || move.getSource()>=h || move.getTarget()<0 || move.getTarget()>=h){
         throw logic_error("invalid heap");
     }
-    else if (move.getSourceCoins()<=0 || move.getTargetCoins()<=0 || move.getTargetCoins()>=move.getSourceCoins() || c[move.getSourceCoins()]<move.getSourceCoins()){
+    else if (move.getSourceCoins()<=0 || move.getTargetCoins()<0 || move.getTargetCoins()>=move.getSourceCoins() || c[move.getSource()]<move.getSourceCoins()){
         throw logic_error("invalid coins");
     }
 
@@ -83,7 +83,7 @@ void State::next(const Move &move) throw(logic_error){
         c[move.getSource()]-=move.getSourceCoins();
         c[move.getTarget()]+=move.getTargetCoins();
 
-        if (player > n) player = 0;
+        if (player + 1 == n) player = 0;
         else player ++;
     }
 }
