@@ -64,14 +64,18 @@ ostream &operator<<(ostream &out, const Move &move)
     return out;
 }
 
-State::State(int h, const int c[], int n) : h(h), c(new int[h]), n(n) {}
+State::State(int h, const int c[], int n) : h(h), c(new int[h]), n(n) {
+    for (int i = 0; i<h; i++){
+        this->c[i] = c[i];
+    }
+}
 State::~State() {delete[] c;}
 
 void State::next(const Move &move) throw(logic_error){
     if (move.getSource()<0 || move.getSource()>=h || move.getTarget()<0 || move.getTarget()>=h){
         throw logic_error("invalid heap");
     }
-    else if (move.getSourceCoins()<0 || move.getTargetCoins()<=0 || move.getTargetCoins()>=move.getSourceCoins()){
+    else if (move.getSourceCoins()<=0 || move.getTargetCoins()<=0 || move.getTargetCoins()>=move.getSourceCoins() || c[move.getSourceCoins()]<move.getSourceCoins()){
         throw logic_error("invalid coins");
     }
 
@@ -95,8 +99,7 @@ int State::getCoins(int h) const throw(logic_error)
 {
     if (h < 0 || h >= this->h)
         throw logic_error("invalid heap");
-    else
-        return c[h];
+    else return c[h];
 }
 int State::getPlayers() const { return n; }
 int State::getPlaying() const { return player;}
@@ -106,7 +109,7 @@ ostream &operator<<(ostream &out, const State &state){
     for (int i=1; i<state.h; i++){
         out  << ", " << state.c[i];
     }
-    out << " with " << state.getPlaying() << '/' << state.getPlayers() << " playing";
+    out << " with " << state.getPlaying() << '/' << state.getPlayers() << " playing next";
     return out;
 }
 
