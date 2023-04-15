@@ -21,7 +21,7 @@ Player::Player(const string &n) : name(n) {}
 
 ostream &operator<<(ostream &out, const Player &player)
 {
-    out << player.getType() << "player" << player.name;
+    out << player.getType() << " player " << player.name;
     return out;
 }
 
@@ -38,11 +38,13 @@ public:
         int heap = 0;
         int coins = 0;
         for (int i = 0; i < s.getHeaps(); i++)
+        {
             if (s.getCoins(i) > coins)
             {
                 heap = i;
                 coins = s.getCoins(i);
             }
+        }
         Move GreedyMove(heap, coins, 0, 0);
         return GreedyMove;
     }
@@ -64,11 +66,13 @@ public:
         int heap = 0;
         int coins = 0;
         for (int i = 0; i < s.getHeaps(); i++)
+        {
             if (s.getCoins(i) > coins)
             {
                 heap = i;
                 coins = s.getCoins(i);
             }
+        }
         Move SpartanMove(heap, 1, 0, 0);
         return SpartanMove;
     }
@@ -89,14 +93,9 @@ public:
     {
         int heap = 0;
         int coins = 0;
-        for (int i=0; i<s.getHeaps(); i++){
-            if (s.getCoins(i)!=0){
-                coins = s.getCoins(i);
-                break;
-            }
-        }
+        coins = (s.getCoins(0) > 0) ? s.getCoins(0):50; 
         for (int i = 1; i < s.getHeaps(); i++)
-            if (s.getCoins(i) < coins)
+            if (s.getCoins(i) < coins && s.getCoins(i) > 0)
             {
                 heap = i;
                 coins = s.getCoins(i);
@@ -108,7 +107,6 @@ public:
 private:
     string type;
 };
-
 
 class RighteousPlayer : public Player
 {
@@ -125,23 +123,25 @@ public:
         int targetHeap = 0;
         int targetHeapCoins = s.getCoins(0);
         for (int i = 0; i < s.getHeaps(); i++)
+        {
             if (s.getCoins(i) > coins)
             {
                 heap = i;
                 coins = s.getCoins(i);
             }
-
-        for (int i = 1; i < s.getHeaps(); i++)
             if (s.getCoins(i) < targetHeapCoins)
             {
                 targetHeap = i;
                 targetHeapCoins = s.getCoins(i);
             }
+        }
 
-        Move RighteousMove(heap, coins/2, 0, (coins/2)-1);
+        Move RighteousMove(heap, (coins + 1) / 2, targetHeap, ((coins + 1) / 2) - 1);
         return RighteousMove;
     }
 
 private:
     string type;
 };
+
+Player::~Player() { name.clear(); }
