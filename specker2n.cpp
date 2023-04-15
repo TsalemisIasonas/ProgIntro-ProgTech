@@ -25,10 +25,10 @@ ostream &operator<<(ostream &out, const Player &player)
     return out;
 }
 
-class Greedy : public Player
+class GreedyPlayer : public Player
 {
 public:
-    Greedy(const string &n) : Player(n), type("Greedy") {}
+    GreedyPlayer(const string &n) : Player(n), type("Greedy") {}
     const string &getType() const override
     {
         return type;
@@ -51,10 +51,10 @@ private:
     string type;
 };
 
-class Spartan : public Player
+class SpartanPlayer : public Player
 {
 public:
-    Spartan(const string &n) : Player(n), type("Spartan") {}
+    SpartanPlayer(const string &n) : Player(n), type("Spartan") {}
     const string &getType() const override
     {
         return type;
@@ -69,7 +69,7 @@ public:
                 heap = i;
                 coins = s.getCoins(i);
             }
-        Move SpartanMove(heap, coins, 0, 0);
+        Move SpartanMove(heap, 1, 0, 0);
         return SpartanMove;
     }
 
@@ -77,10 +77,10 @@ private:
     string type;
 };
 
-class Sneaky : public Player
+class SneakyPlayer : public Player
 {
 public:
-    Sneaky(const string &n) : Player(n), type("Sneaky") {}
+    SneakyPlayer(const string &n) : Player(n), type("Sneaky") {}
     const string &getType() const override
     {
         return type;
@@ -88,9 +88,9 @@ public:
     Move play(const State &s) override
     {
         int heap = 0;
-        int coins = 0;
-        for (int i = 0; i < s.getHeaps(); i++)
-            if (s.getCoins(i) > coins)
+        int coins = s.getCoins(0);
+        for (int i = 1; i < s.getHeaps(); i++)
+            if (s.getCoins(i) < coins)
             {
                 heap = i;
                 coins = s.getCoins(i);
@@ -104,10 +104,10 @@ private:
 };
 
 
-class Righteous : public Player
+class RighteousPlayer : public Player
 {
 public:
-    Righteous(const string &n) : Player(n), type("Righteous") {}
+    RighteousPlayer(const string &n) : Player(n), type("Righteous") {}
     const string &getType() const override
     {
         return type;
@@ -116,13 +116,23 @@ public:
     {
         int heap = 0;
         int coins = 0;
+        int targetHeap = 0;
+        int targetHeapCoins = s.getCoins(0);
         for (int i = 0; i < s.getHeaps(); i++)
             if (s.getCoins(i) > coins)
             {
                 heap = i;
                 coins = s.getCoins(i);
             }
-        Move RighteousMove(heap, coins, 0, 0);
+
+        for (int i = 1; i < s.getHeaps(); i++)
+            if (s.getCoins(i) < targetHeapCoins)
+            {
+                targetHeap = i;
+                targetHeapCoins = s.getCoins(i);
+            }
+
+        Move RighteousMove(heap, coins/2, 0, (coins/2)-1);
         return RighteousMove;
     }
 
