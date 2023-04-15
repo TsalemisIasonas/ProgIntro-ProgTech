@@ -88,7 +88,13 @@ public:
     Move play(const State &s) override
     {
         int heap = 0;
-        int coins = s.getCoins(0);
+        int coins = 0;
+        for (int i=0; i<s.getHeaps(); i++){
+            if (s.getCoins(i)!=0){
+                coins = s.getCoins(i);
+                break;
+            }
+        }
         for (int i = 1; i < s.getHeaps(); i++)
             if (s.getCoins(i) < coins)
             {
