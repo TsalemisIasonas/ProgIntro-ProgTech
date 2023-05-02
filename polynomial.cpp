@@ -29,3 +29,5 @@ public:
 
         friend ostream &operator<<(ostream &out, const Polynomial &p);
     };
+
+
