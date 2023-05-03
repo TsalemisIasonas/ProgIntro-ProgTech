@@ -38,8 +38,12 @@ public:
 
     ChessBoardArray &operator=(const ChessBoardArray &a);
 
-    int &select(int i, int j);
-    int select(int i, int j) const;
+    int &select(int i, int j){
+        return data[loc(i,j)];
+    }
+    int select(int i, int j) const{
+        return data[loc(i,j)];
+    }
 
     const Row operator[](int i);
     const ConstRow operator[](int i) const;
@@ -50,5 +54,16 @@ private:
     int *data;
     unsigned size;
     unsigned base;
+
+    unsigned int loc(int i, int j) throw (out_of_range) {
+        i = base-i;
+        j = base-j;
+
+        if (i<0 || j<0 || i>size || j> size || (i+j)%2==1){
+            throw out_of_range("Invalid square");
+        }
+
+        return (i-1)*size+1;    // maybe needs fixing
+    }
 
 };
