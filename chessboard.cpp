@@ -42,13 +42,22 @@ public:
         return data[loc(i,j)];
     }
     int select(int i, int j) const{
-        return data[loc(i,j)];
+        // return data[loc(i,j)];
     }
 
     const Row operator[](int i);
     const ConstRow operator[](int i) const;
 
-    friend ostream &operator<<(ostream &out, const ChessBoardArray &a);
+    friend ostream &operator<<(ostream &out, const ChessBoardArray &a){
+        for (int rows = 0; rows<a.size; rows++){
+            for (int cols = 0; cols<a.size; cols++){
+                cout << setw(4);
+                cout << a.select(rows,cols);
+            }
+            cout << endl;
+        }
+        return out;     // maybe select will not work
+    }
 
 private:
     int *data;
@@ -67,3 +76,12 @@ private:
     }
 
 };
+
+int main(){
+    for (int size=0; size<4; size++){
+        for (int i=0; i<4; i++){
+            cout << setw(4);
+            cout << '0';
+        }
+    }
+}
