@@ -121,7 +121,6 @@ protected:
 
 int main() 
 {
-    cout << "run";
     ChessBoardArray a(4, 1); // size 4x4, rows and columns numbered from 1
     a[3][1] = 42;
     a[4][4] = 17;
