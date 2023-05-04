@@ -53,8 +53,12 @@ public:
         return data[loc(i,j)];
     }
 
-    const Row operator[](int i);
-    const ConstRow operator[](int i) const;
+    const Row operator[](int i){
+        return Row(*this,i);
+    }
+    const ConstRow operator[](int i) const{
+        return ConstRow(*this,i);
+    }
 
     friend ostream &operator<<(ostream &out, const ChessBoardArray &a){
         for (int rows = 0; rows<a.size; rows++){
