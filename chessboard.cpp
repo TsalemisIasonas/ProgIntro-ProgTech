@@ -44,7 +44,11 @@ public:
         delete[] data;
     }
 
-    ChessBoardArray &operator=(const ChessBoardArray &a);
+    ChessBoardArray &operator=(const ChessBoardArray &a){
+        delete[] data;
+        data = a.data;
+        return *this;
+    }
 
     int &select(int i, int j){
         return data[loc(i,j)];
