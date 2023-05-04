@@ -10,7 +10,9 @@ protected:
     {
     public:
         Row(ChessBoardArray &a, int i):array(a),i(i){}
-        int &operator[](int i) const;
+        int &operator[](int i) const{
+            return array.select(i,i);
+        }
     private:
         ChessBoardArray &array;
         int i;
@@ -19,17 +21,23 @@ protected:
     class ConstRow
     {
     public:
-        ConstRow(const ChessBoardArray &a, int i);
-        int operator[](int i) const;
+        ConstRow(const ChessBoardArray &a, int i): array(a), i(i){}
+        int operator[](int i) const{
+            return array.select(i,i);
+        }
+    private:
+        const ChessBoardArray &array;
+        int i;
     };
 
 public:
     ChessBoardArray(unsigned size = 0, unsigned base = 0):size(size),base(base){
         data = new int[size*size];
     }
-    ChessBoardArray(const ChessBoardArray &a){
-        for (unsigned arraysize = 0; arraysize<size; arraysize++){
-            data[arraysize] = 0;
+    ChessBoardArray(const ChessBoardArray &a):data(new int[a.size*a.size]),size(a.size),base(a.base){
+        
+        for (unsigned arraysize = 0; arraysize<a.size*a.size; arraysize++){
+            data[arraysize] = a.data[arraysize];
         }
     };
     ~ChessBoardArray(){
@@ -42,7 +50,7 @@ public:
         return data[loc(i,j)];
     }
     int select(int i, int j) const{
-        // return data[loc(i,j)];
+        return data[loc(i,j)];
     }
 
     const Row operator[](int i);
@@ -64,7 +72,7 @@ private:
     unsigned size;
     unsigned base;
 
-    unsigned int loc(int i, int j) throw (out_of_range) {
+    unsigned int loc(int i, int j) const throw(out_of_range) {
         i = base-i;
         j = base-j;
 
