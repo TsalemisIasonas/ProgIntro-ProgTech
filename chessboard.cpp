@@ -23,7 +23,7 @@ protected:
     class ConstRow
     {
     public:
-        ConstRow(const ChessBoardArray &a, int i) : array(a), j(i) {}
+        ConstRow(const ChessBoardArray &a, int i) : array(a), j(i){}
         int operator[](int i) const
         {
             return array.select(j, i);
@@ -35,16 +35,14 @@ protected:
     };
 
 public:
-    ChessBoardArray(unsigned size = 0, unsigned base = 0) : size(size), base(base)
+    ChessBoardArray(unsigned size = 0, unsigned base = 0) : arraysize(arraysize), arraybase(arraybase)
     {
-        data = new int[size * size];
-        for (unsigned i =0; i<size*size; i++){
-            data[i] = 0;
-        }
+        data = new int[(size*size+1)/2];
+
     }
-    ChessBoardArray(const ChessBoardArray &a) : data(new int[a.size * a.size]), size(a.size), base(a.base)
+    ChessBoardArray(const ChessBoardArray &a) : data(new int[(a.arraysize * a.arraysize+1)/2]), arraysize(a.arraysize), arraybase(a.arraybase)
     {
-        for (unsigned i = 0; i < a.size * a.size; i++)
+        for (unsigned i = 0; i < ((arraysize * arraysize+1)/2); i++)
         {
             data[i] = a.data[i];
         }
@@ -57,11 +55,11 @@ public:
     ChessBoardArray &operator=(const ChessBoardArray &a)
     {
         delete[] data;
-        data = new int[a.size * a.size];
-        size = a.size;
-        base = a.base;
-
-        for (unsigned i = 0; i < a.size * a.size; i++)
+        arraybase = a.arraybase;
+        arraysize = a.arraysize;
+        
+        data = new int[(arraysize * arraysize + 1)/2];
+        for (unsigned i = 0; i < (arraysize * arraysize + 1)/2; i++)
         {
             data[i] = a.data[i];
         }
@@ -89,60 +87,52 @@ public:
     }
 
     friend ostream &operator<<(ostream &out, const ChessBoardArray &a)
-    {
-        for (unsigned i = 0; i < a.size; i++)
-        {
-            for (unsigned j = 0; j < a.size; j++)
+    {   cout << "hello" << endl;
+        for (int i = 0; i < a.arraysize; i++)
+        {   
+            for (int j = 0; j < a.arraysize; j++)
             {
-                out << setw(4) << a.select(i,j);
+                cout << setw(4); 
+                if ((i+j)%2==0){
+                    cout<< a.select(i+a.arraybase,j+a.arraybase);
+                }
+                else cout << 0;
             }
-            out << endl;
+            cout << endl;
         }
         return out;
     }
 
 private:
     int *data;
-    unsigned size;
-    unsigned base;
+    unsigned arraysize;
+    int arraybase;
 
     unsigned loc(int i, int j) const throw(out_of_range)
     {
-        i = base - i;
-        j = base - j;
+        int newi = arraybase - i;
+        int newj = arraybase - j;
 
-        if (i < 1 || j < 1 || i > size || j > size || (i + j) % 2 == 0)
+        if (newi < 0 || newj < 0 || newi >= arraysize || newj >= arraysize || (newi + newj) % 2 == 0)
         {
             throw out_of_range("Invalid square");
         }
 
-        return (i - 1) * size + (j - 1);
+        return (newi*arraysize +newj)/2;
     }
 };
 
-int main()
+int main() 
 {
     ChessBoardArray a(4, 1); // size 4x4, rows and columns numbered from 1
     a[3][1] = 42;
     a[4][4] = 17;
-    try
-    {
-        a[2][1] = 7;
-    }
-    catch (out_of_range &e)
-    {
-        cout << "a[2][1] is black" << endl;
-    }
-    try
-    {
-        cout << a[1][2] << endl;
-    }
-    catch (out_of_range &e)
-    {
-        cout << "and so is a[1][2]" << endl;
-    }
-
+    try { a[2][1] = 7; }
+    catch(out_of_range &e) { cout << "a[2][1] is black" << endl; }
+    try { cout << a[1][2] << endl; }
+    catch(out_of_range &e) { cout << "and so is a[1][2]" << endl; }
+    
     cout << a;
-
+    
     return 0;
 }

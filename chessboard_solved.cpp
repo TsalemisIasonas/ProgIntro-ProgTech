@@ -1,101 +1,90 @@
-#include <iostream>  // include input/output stream library
-#include <iomanip>   // include input/output manipulation library
-#include <stdexcept> // include standard exception library
-using namespace std; // use the standard namespace
+#include <iostream>
+#include <iomanip>
+#include <stdexcept>
+using namespace std;
 
 class ChessBoardArray
-{          // define a class called ChessBoardArray
-protected: // protected members can only be accessed by derived classes
+{
+protected:
   class Row
-  { // define a nested class called Row
+  {
   public:
-    Row(ChessBoardArray &a, int i) : chessBoardArray(a), row(i) {} // constructor for Row
+    Row(ChessBoardArray &a, int i) : array(a), j(i) {}
     int &operator[](int i) const
-    {                                        // define the [] operator for Row, return by reference
-      return chessBoardArray.select(row, i); // return the selected element of ChessBoardArray by reference
+    {
+      return array.select(j, i);
     }
 
   private:
-    ChessBoardArray &chessBoardArray; // ChessBoardArray reference
-    int row;                          // an integer for row index
+    ChessBoardArray &array;
+    int j;
   };
+  
   class ConstRow
-  { // define another nested class called ConstRow
+  {
   public:
-    ConstRow(const ChessBoardArray &a, int i) : chessBoardArray(a), row(i){}; // constructor for ConstRow
+    ConstRow(const ChessBoardArray &a, int i) : array(a), j(i){}; 
     int operator[](int i) const
-    {                                        // define the [] operator for ConstRow, return by value
-      return chessBoardArray.select(row, i); // return the selected element of ChessBoardArray by value
+    {
+      return array.select(j, i);
     }
 
   private:
-    const ChessBoardArray &chessBoardArray; // constant ChessBoardArray reference
-    int row;                                // an integer for row index
+    const ChessBoardArray &array; 
+    int j;                                
   };
 
 public:
-  // Constructor with default arguments, creates a new ChessBoardArray object
-  // with the specified size and base values. Allocates memory for data array.
-  ChessBoardArray(unsigned size = 0, unsigned base = 0) : data(new int[(size * size + 1) / 2]), thebase(base), thesize(size) {}
+  ChessBoardArray(unsigned size = 0, unsigned base = 0) : data(new int[(size * size + 1) / 2]), arraybase(base), arraysize(size) {}
 
-  // Copy constructor, creates a new ChessBoardArray object by copying the data
-  // from another ChessBoardArray object. Allocates memory for data array.
-  ChessBoardArray(const ChessBoardArray &a) : data(new int[(a.thesize * a.thesize + 1) / 2]), thebase(a.thebase), thesize(a.thesize)
+  ChessBoardArray(const ChessBoardArray &a) : data(new int[(a.arraysize * a.arraysize + 1) / 2]), arraybase(a.arraybase), arraysize(a.arraysize)
   {
-    for (unsigned i = 0; i < ((thesize * thesize + 1) / 2); ++i)
+    for (unsigned i = 0; i < ((arraysize * arraysize + 1) / 2); ++i)
       data[i] = a.data[i];
   }
 
-  // Destructor, frees the memory allocated for the data array.
   ~ChessBoardArray() { delete[] data; }
 
-  // Assignment operator, assigns the contents of another ChessBoardArray object
-  // to this ChessBoardArray object. Allocates memory for data array.
   ChessBoardArray &operator=(const ChessBoardArray &a)
   {
     delete[] data;
-    thebase = a.thebase;
-    thesize = a.thesize;
-    data = new int[(thesize * thesize + 1) / 2];
-    for (unsigned i = 0; i < ((thesize * thesize + 1) / 2); ++i)
+    arraybase = a.arraybase;
+    arraysize = a.arraysize;
+    data = new int[(arraysize * arraysize + 1) / 2];
+    for (unsigned i = 0; i < ((arraysize * arraysize + 1) / 2); ++i)
       data[i] = a.data[i];
     return *this;
   }
 
-  // Returns a reference to the element at position (i,j) of the ChessBoardArray object.
   int &select(int i, int j)
   {
     return data[loc(i, j)];
   }
 
-  // Returns a copy of the element at position (i,j) of the ChessBoardArray object.
   int select(int i, int j) const
   {
     return data[loc(i, j)];
   }
 
-  // Returns a Row object representing the row at index i of the ChessBoardArray object.
   const Row operator[](int i)
   {
     return Row(*this, i);
   }
 
-  // Returns a ConstRow object representing the row at index i of the ChessBoardArray object.
   const ConstRow operator[](int i) const
   {
     return ConstRow(*this, i);
   }
 
-  // Overloads the << operator to output the ChessBoardArray object to the given ostream.
   friend ostream &operator<<(ostream &out, const ChessBoardArray &a)
   {
-    for (int line = 0; line < a.thesize; ++line)
+    for (int line = 0; line < a.arraysize; ++line)
     {
-      for (int sthlh = 0; sthlh < a.thesize; ++sthlh)
+      for (int column = 0; column < a.arraysize; ++column)
       {
         cout << setw(4);
-        if ((line + sthlh) % 2 == 0)
-          cout << a.select(line + a.thebase, sthlh + a.thebase);
+        if ((line + column) % 2 == 0) 
+          cout << a.select(line + a.arraybase, column + a.arraybase); // access elements of even indexed rows and columns
         else
           cout << 0;
       }
@@ -106,16 +95,15 @@ public:
 
 protected:
   int *data;
-  int thebase;
-  unsigned thesize;
-  // Helper function to compute the index into the data array given row i and column j.
-  // Throws an out_of_range exception if the indices are invalid.
+  int arraybase;
+  unsigned arraysize;
+
   unsigned int loc(int i, int j) const throw(out_of_range)
   {
-    int di = i - thebase, dj = j - thebase;
-    if (di < 0 || di >= thesize || dj < 0 || dj >= thesize || (i + j) % 2 == 1)
+    int newi = i - arraybase, newj = j - arraybase;
+    if (newi < 0 || newi >= arraysize || newj < 0 || newj >= arraysize || (i + j) % 2 == 1)
       throw out_of_range("invalid index");
-    return (di * thesize + dj) / 2;
+    return (newi * arraysize + newj) / 2;
   }
 };
 
