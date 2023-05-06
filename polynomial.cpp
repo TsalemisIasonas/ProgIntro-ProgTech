@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+
 using namespace std;
 
 class Polynomial
@@ -11,37 +12,50 @@ protected:
         int exponent;
         int coefficient;
         Term *next;
-        Term(int exp, int coeff, Term *n) : exponent(exp), coefficient(coeff), next(n) {}
+
+        Term(int e, int c, Term *n)
+        {
+            exponent = e;
+            coefficient = c;
+            next = n;
+        }
+
         friend class Polynomial;
         friend Polynomial operator+(const Polynomial &p, const Polynomial &q);
         friend Polynomial operator*(const Polynomial &p, const Polynomial &q);
-
         friend ostream &operator<<(ostream &out, const Polynomial &p);
     };
+
     Term *head;
 
-    void insertEnd(int coeff, int exp)
-    {
-        if (head == nullptr)
-        {
-            head = new Term(exp, coeff, nullptr);
-            return;
-        }
-        Term *temp = head;
-        while (temp->next != nullptr)
-            temp = temp->next;
-        temp->next = new Term(exp, coeff, nullptr);
-    }
     void destroy()
     {
-        Term *current = head;
-        Term *next;
-        while (current != nullptr)
+        Term *p = head;
+        while (p != nullptr)
         {
-            next = current->next;
-            delete current;
-            current = next;
+            Term *q = p;
+            p = p->next;
+            delete q;
         }
+    }
+
+    void InsertEnd(const int &e, const int &c)
+    {
+        Term *n = new Term(e, c, nullptr);
+        Term *p;
+
+        if (head == nullptr)
+        {
+            head = n;
+            return;
+        }
+
+        p = head;
+        while (p->next != nullptr)
+        {
+            p = p->next;
+        }
+        p->next = n;
     }
 
 public:
@@ -49,25 +63,28 @@ public:
     {
         head = nullptr;
     }
+
     Polynomial(const Polynomial &p)
     {
         head = nullptr;
         for (Term *i = p.head; i != nullptr; i = i->next)
         {
-            insertEnd(i->coefficient, i->exponent);
+            InsertEnd(i->exponent, i->coefficient);
         }
     }
+
     ~Polynomial()
     {
         destroy();
-    }
+    };
 
     Polynomial &operator=(const Polynomial &p)
     {
-        if (this != &p)
+        destroy();
+        head = nullptr;
+        for (Term *i = p.head; i != nullptr; i = i->next)
         {
-            destroy();
-            new (this) Polynomial(p);
+            InsertEnd(i->exponent, i->coefficient);
         }
         return *this;
     }
@@ -134,15 +151,14 @@ public:
             }
         }
     }
-
     double evaluate(double x)
     {
         double result = 0;
-        Term *temp = head;
-        while (temp != nullptr)
+        Term *p = head;
+        while (p != nullptr)
         {
-            result += (temp->coefficient) * pow(x, temp->exponent);
-            temp = temp->next;
+            result += (double)p->coefficient * pow(x, p->exponent);
+            p = p->next;
         }
         return result;
     }
@@ -205,39 +221,47 @@ public:
         return result;
     }
 
-    friend ostream & operator << (ostream &out, const Polynomial &p) {
+    friend ostream &operator<<(ostream &out, const Polynomial &p)
+    {
         Term *n = p.head;
 
-        if(n == nullptr) {
+        if (n == nullptr)
+        {
             out << "0";
             return out;
         }
 
-        if(n->coefficient < 0) 
+        if (n->coefficient < 0)
             out << "- ";
-        if(abs(n->coefficient) != 1) 
+        if (abs(n->coefficient) != 1)
             out << abs(n->coefficient);
-        if(n->exponent == 0 && abs(n->coefficient) == 1) 
+        if (n->exponent == 0 && abs(n->coefficient) == 1)
             out << "1";
-        if(n->exponent == 1) 
+        if (n->exponent == 1)
             out << "x";
-        else if(n->exponent != 0) 
+        else if (n->exponent != 0)
             out << "x^" << n->exponent;
         n = n->next;
-        while(n != nullptr) {
-            if(n->coefficient < 0) {
+        while (n != nullptr)
+        {
+            if (n->coefficient < 0)
+            {
                 out << " - ";
             }
-            else {
+            else
+            {
                 out << " + ";
             }
-            if(abs(n->coefficient) != 1 || n->exponent == 0) {
+            if (abs(n->coefficient) != 1 || n->exponent == 0)
+            {
                 out << abs(n->coefficient);
             }
-            if(n->exponent == 1) {
+            if (n->exponent == 1)
+            {
                 out << "x";
             }
-            else if(n->exponent != 0) {
+            else if (n->exponent != 0)
+            {
                 out << "x^" << n->exponent;
             }
             n = n->next;
@@ -246,19 +270,3 @@ public:
         return out;
     }
 };
-
-// int main() {
-//   Polynomial p;
-//   p.addTerm(1, -3);
-//   p.addTerm(2, -1);
-//   p.addTerm(0, -1);
-//   Polynomial q(p);
-//   q.addTerm(1, -3);
-//   q.addTerm(3, -12);
-//   cout << "P(X) = " << p << endl;
-//   cout << "P(1) = " << p.evaluate(1) << endl;
-//   cout << "Q(X) = " << q << endl;
-//   cout << "Q(1) = " << q.evaluate(1) << endl;
-//   cout << "(P+Q)(X) = " << p+q << endl;
-//   cout << "(P*Q)(X) = " << p*q << endl;
-// }

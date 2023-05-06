@@ -25,7 +25,7 @@ protected:
     
     Term *head;
 
-    void purge() {
+    void destroy() {
         Term *p = head;
         while(p != nullptr) {
             Term *q = p;
@@ -34,7 +34,7 @@ protected:
         } 
     }
     
-    void push_back(const int &e, const int &c) {
+    void InsertEnd(const int &e, const int &c) {
         Term *n = new Term(e, c, nullptr);
         Term *p;
 
@@ -50,12 +50,6 @@ protected:
         p->next = n;
     }
 
-    void copy(const Polynomial &p) {
-        for(Term *i = p.head; i != nullptr; i = i->next) {
-            push_back(i->exponent, i->coefficient);
-        }
-    }
-
 public:
     Polynomial() {
         head = nullptr;
@@ -63,17 +57,21 @@ public:
     
     Polynomial(const Polynomial &p) {
         head = nullptr;
-        copy(p);
+        for(Term *i = p.head; i != nullptr; i = i->next) {
+            InsertEnd(i->exponent, i->coefficient);
+        }
     }
     
     ~Polynomial() {
-        purge();
+        destroy();
     };
 
     Polynomial & operator = (const Polynomial &p) {
-        purge();
+        destroy();
         head = nullptr;
-        copy(p);
+        for(Term *i = p.head; i != nullptr; i = i->next) {
+            InsertEnd(i->exponent, i->coefficient);
+        }
         return *this;
     }
 
@@ -226,18 +224,3 @@ public:
 };
 
 
-int main() {
-  Polynomial p;
-  p.addTerm(1, 3);
-  p.addTerm(2, 1);
-  p.addTerm(0, -1);
-  Polynomial q(p);
-  q.addTerm(1, -3);
-  q.addTerm(3, -12);
-  cout << "P(X) = " << p << endl;
-  cout << "P(1) = " << p.evaluate(1) << endl;
-  cout << "Q(X) = " << q << endl;
-  cout << "Q(1) = " << q.evaluate(1) << endl;
-  cout << "(P+Q)(X) = " << p+q << endl;
-  cout << "(P*Q)(X) = " << p*q << endl;
-}
