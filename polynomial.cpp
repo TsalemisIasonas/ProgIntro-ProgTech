@@ -112,13 +112,71 @@ public:
         return result;
     }
 
-    friend Polynomial operator+(const Polynomial &p, const Polynomial &q){
-        Polynomial addition;
+friend Polynomial operator+(const Polynomial& p, const Polynomial& q){
+    Polynomial result;
+    Term *pTerm = p.head;
+    Term *qTerm = q.head;
 
+    while (pTerm != nullptr && qTerm != nullptr)
+    {
+        int coeffSum = 0;
+        int exp = 0;
+
+        if (pTerm == nullptr)
+        {
+            coeffSum = qTerm->coefficient;
+            exp = qTerm->exponent;
+            qTerm = qTerm->next;
+        }
+        else if (qTerm == nullptr)
+        {
+            coeffSum = pTerm->coefficient;
+            exp = pTerm->exponent;
+            pTerm = pTerm->next;
+        }
+        else if (pTerm->exponent > qTerm->exponent)
+        {
+            result.addTerm(pTerm->exponent, pTerm->coefficient);
+            pTerm = pTerm->next;
+        }
+        else if (pTerm->exponent < qTerm->exponent)
+        {
+            result.addTerm(qTerm->exponent, qTerm->coefficient);
+            qTerm = qTerm->next;
+        }
+        else
+        {
+            coeffSum = pTerm->coefficient + qTerm->coefficient;
+            exp = pTerm->exponent;
+            if(coeffSum != 0)
+                result.addTerm(exp,coeffSum);                
+            pTerm = pTerm->next;
+            qTerm = qTerm->next;
+        }
     }
-    friend Polynomial operator*(const Polynomial &p, const Polynomial &q){
-        
+
+    return result;
+}
+
+
+
+
+friend Polynomial operator*(const Polynomial &p, const Polynomial &q){
+    Polynomial product;
+
+    for (Term *pTerm = p.head; pTerm != nullptr; pTerm = pTerm->next)
+    {
+        for (Term *qTerm = q.head; qTerm != nullptr; qTerm = qTerm->next)
+        {
+            double coeff = pTerm->coefficient * qTerm->coefficient;
+            int exp = pTerm->exponent + qTerm->exponent;
+            product.insertEnd(coeff, exp);
+        }
     }
+
+    return product;
+}
+
 
 friend ostream& operator<<(ostream& out, const Polynomial& p) {
     string result;
@@ -142,14 +200,21 @@ friend ostream& operator<<(ostream& out, const Polynomial& p) {
         if (i->exponent > 1) {
             result += "^" + to_string(i->exponent);
         } else if (i->exponent == 1) {
-            result += " ";
+            result += "";
         }
     }
-    out << result << endl;
+    out << result;
     return out;
 }
 
 };
+
+
+
+
+
+
+
 
 int main()
 {
@@ -165,7 +230,7 @@ int main()
     cout << "P(x) = " << p << endl;
     cout << "P(1) = " << p.evaluate(1) << endl;
     cout << "Q(x) = " << q << endl;
-    // cout << "Q(1) = " << q.evaluate(1) << endl;
-    // cout << "(P + Q)(x) = " << p + q << endl;
-    // cout << "(P * Q)(x) = " << p * q << endl;
+    cout << "Q(1) = " << q.evaluate(1) << endl;
+    cout << "(P + Q)(x) = " << p + q << endl;
+    cout << "(P * Q)(x) = " << p * q << endl;
 }
