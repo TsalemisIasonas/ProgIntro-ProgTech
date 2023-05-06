@@ -73,31 +73,54 @@ public:
         return *this;
     }
 
-    void addTerm(int expon, int coeff)
-    {
-        Term *newTerm = new Term(expon, coeff, nullptr);
+void addTerm(int e, int c) {
+        Term *n = new Term(e, c, nullptr);
+        Term *p, *q;
 
-        if (head == nullptr)
-        {
-            head = newTerm;
+        if(c == 0) {
+            delete n;
             return;
         }
 
-        if (expon > head->exponent)
-        {
-            newTerm->next = head;
-            head = newTerm;
+        if(head == nullptr) {
+            head = n;
+            head->next = nullptr;
             return;
         }
 
-        Term *current = head;
-        while (current->next != nullptr && expon < current->next->exponent)
-        {
-            current = current->next;
+        if(head->exponent == e) {
+            head->coefficient += c;
+            if(head->coefficient == 0) {
+                p = head;
+                head = head->next;
+                delete p;
+            }
+            delete n;
+            return;
         }
 
-        newTerm->next = current->next;
-        current->next = newTerm;
+        p = head;
+        q = p->next;
+        while(q != nullptr && q->exponent > e) {
+            p = q;
+            q = q->next; 
+        }
+        if(q != nullptr && q->exponent == e) {
+            q->coefficient += c;
+            if(q->coefficient == 0) {
+                p->next = q->next;
+                delete q;
+            }
+            delete n;
+        } else {
+            if(n->exponent < p->exponent) {
+                n->next = p->next;
+                p->next = n;
+            } else {
+                n->next = p;
+                head = n;
+            }
+        }
     }
 
     double evaluate(double x)
@@ -114,138 +137,94 @@ public:
 
 
 
-    friend Polynomial operator+(const Polynomial &p, const Polynomial &q)
-    {
+    friend Polynomial operator + (const Polynomial &p, const Polynomial &q) {
         Polynomial result;
-        Term *pTerm = p.head;
-        Term *qTerm = q.head;
+        Term *pterm, *qterm, *resterm;
 
-        while (pTerm != nullptr && qTerm != nullptr)
-        {
-            double coeffSum = 0.0;
-            int exp = 0;
+        pterm = p.head;
+        qterm = q.head;
 
-            if (pTerm == nullptr)
-            {
-                coeffSum = qTerm->coefficient;
-                exp = qTerm->exponent;
-                qTerm = qTerm->next;
+        while(pterm != nullptr && qterm != nullptr) {
+            if(pterm->exponent > qterm->exponent) {
+                result.addTerm(pterm->exponent, pterm->coefficient);
+                pterm = pterm->next;
             }
-            else if (qTerm == nullptr)
-            {
-                coeffSum = pTerm->coefficient;
-                exp = pTerm->exponent;
-                pTerm = pTerm->next;
+            else if(qterm->exponent > pterm->exponent) {
+                result.addTerm(qterm->exponent,qterm->coefficient);
+                qterm = qterm->next;
             }
-            else if (pTerm->exponent > qTerm->exponent)
-            {
-                result.addTerm(pTerm->exponent, pTerm->coefficient);
-                pTerm = pTerm->next;
-            }
-            else if (pTerm->exponent < qTerm->exponent)
-            {
-                result.addTerm(qTerm->exponent, qTerm->coefficient);
-                qTerm = qTerm->next;
-            }
-            else
-            {
-                coeffSum = pTerm->coefficient + qTerm->coefficient;
-                exp = pTerm->exponent;
-                if (coeffSum != 0)
-                    result.addTerm(exp, coeffSum);
-                pTerm = pTerm->next;
-                qTerm = qTerm->next;
+            else {
+                result.addTerm(pterm->exponent, pterm->coefficient + qterm->coefficient);
+                pterm = pterm->next; 
+                qterm = qterm->next;
             }
         }
 
+        if(pterm == nullptr) {
+            resterm = qterm;
+        }
+        else if(qterm == nullptr) {
+            resterm = qterm;
+        }
+
+        while(resterm != nullptr){
+            result.addTerm(resterm->exponent, resterm->coefficient);
+            resterm = resterm->next;
+        }
+        return result;
+    }
+    friend Polynomial operator * (const Polynomial &p, const Polynomial &q) {
+        Polynomial result;
+
+        for(Term *i = p.head; i != nullptr; i = i->next) {
+            for(Term *j = q.head; j != nullptr; j = j->next) {
+                result.addTerm(i->exponent + j->exponent, i->coefficient * j-> coefficient);
+            }
+        }
         return result;
     }
 
-    friend Polynomial operator*(const Polynomial &p, const Polynomial &q)
+    friend ostream &operator<<(ostream &out, const Polynomial &p)
     {
-        Polynomial product;
-
-        for (Term *pTerm = p.head; pTerm != nullptr; pTerm = pTerm->next)
+        string result;
+        for (Term *i = p.head; i != nullptr; i = i->next)
         {
-            for (Term *qTerm = q.head; qTerm != nullptr; qTerm = qTerm->next)
-            {
-                double coeff = pTerm->coefficient * qTerm->coefficient;
-                int exp = pTerm->exponent + qTerm->exponent;
-                product.insertEnd(coeff, exp);
-            }
-        }
-
-        return product;
-    }
-
-friend ostream &operator<<(ostream &out, const Polynomial &p)
-{
-    string result;
-    Term *current = p.head;
-    bool first_term = true; 
-
-    while (current != nullptr)
-    {
-        if (current->coefficient != 0) 
-        {
-            if (first_term)
-            {
-                first_term = false;
-            }
-            else if (current->coefficient > 0) 
-            {
-                result += " + ";
-            }
-            else 
+            if (i->coefficient < 0)
             {
                 result += " - ";
             }
+            else if (i != p.head)
+            {
+                result += " + ";
+            }
 
-            int abs_coeff = abs(current->coefficient);
-            if (abs_coeff == 1 && current->exponent != 0)
+            int abs_coeff = abs(i->coefficient);
+            if (abs_coeff == 1 && i->exponent != 0)
             {
                 result += "x";
             }
             else
             {
                 result += to_string(abs_coeff);
-                if (current->exponent != 0)
+                if (i->exponent != 0)
                 {
                     result += "x";
                 }
             }
 
-            if (current->exponent > 1)
+            if (i->exponent > 1)
             {
-                result += "^" + to_string(current->exponent);
+                result += "^" + to_string(i->exponent);
             }
-            else if (current->exponent == 1)
+            else if (i->exponent == 1)
             {
                 result += "";
             }
         }
-
-        Term *next_term = current->next;
-
-        while (next_term != nullptr && next_term->exponent == current->exponent)
-        {
-            current->coefficient += next_term->coefficient;
-            current->next = next_term->next;
-            delete next_term;
-            next_term = current->next;
-        }
-
-        current = next_term;
+        out << result;
+        return out;
     }
-    out << result;
-    return out;
-}
-
-
 };
-
-
-
 
 // int main()
 // {
