@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <string>
 using namespace std;
 
 class Polynomial
@@ -111,53 +112,43 @@ public:
         return result;
     }
 
-    friend Polynomial operator+(const Polynomial &p, const Polynomial &q);
-    friend Polynomial operator*(const Polynomial &p, const Polynomial &q);
+    friend Polynomial operator+(const Polynomial &p, const Polynomial &q){
+        Polynomial addition;
 
-    friend ostream &operator<<(ostream &out, const Polynomial &p)
-    {
-        for (Term *i = p.head; i != nullptr; i = i->next)
-        {
-            if (i == p.head)
-            {
-                if (i->coefficient == 1)
-                {
-                    out << "x^" << i->exponent;
-                }
-                else if (i->coefficient == 0)
-                    continue;
+    }
+    friend Polynomial operator*(const Polynomial &p, const Polynomial &q){
+        
+    }
 
-                else if (i->coefficient < 0)
-                {
-                    out << "- " << abs(i->coefficient) << "x^" << i->exponent;
-                }
-                else
-                {
-                    out << abs(i->coefficient) << "x^" << i->exponent;
-                }
-            }
-            else
-            {
-                if (i->coefficient == 1)
-                {
-                    out << " + x^" << i->exponent;
-                }
-                else if (i->coefficient == 0)
-                    continue;
-
-                else if (i->coefficient < 0)
-                {
-                    out << " - " << abs(i->coefficient) << "x^" << i->exponent;
-                }
-                else
-                {
-                    out << " + " << abs(i->coefficient) << "x^" << i->exponent;
-                }
+friend ostream& operator<<(ostream& out, const Polynomial& p) {
+    string result;
+    for (Term* i = p.head; i != nullptr; i = i->next) {
+        if (i->coefficient < 0) {
+            result += " - ";
+        } else if (i != p.head) {
+            result += " + ";
+        }
+        
+        int abs_coeff = abs(i->coefficient);
+        if (abs_coeff == 1 && i->exponent != 0) {
+            result += "x";
+        } else {
+            result += to_string(abs_coeff);
+            if (i->exponent != 0) {
+                result += "x";
             }
         }
-        out << endl;
-        return out;
+        
+        if (i->exponent > 1) {
+            result += "^" + to_string(i->exponent);
+        } else if (i->exponent == 1) {
+            result += " ";
+        }
     }
+    out << result << endl;
+    return out;
+}
+
 };
 
 int main()
@@ -166,14 +157,14 @@ int main()
     p.addTerm(1, 3); // 3x
 
     p.addTerm(2, 1); // x^2
-    // p.addTerm(0, -1); // -1
+    p.addTerm(0, -1); // -1
 
-    // Polynomial q(p);  // x^2 + 3x - 1
-    // q.addTerm(1, -3); // -3x
+    Polynomial q(p);  // x^2 + 3x - 1
+    q.addTerm(1, -3); // -3x
 
     cout << "P(x) = " << p << endl;
     cout << "P(1) = " << p.evaluate(1) << endl;
-    // cout << "Q(x) = " << q << endl;
+    cout << "Q(x) = " << q << endl;
     // cout << "Q(1) = " << q.evaluate(1) << endl;
     // cout << "(P + Q)(x) = " << p + q << endl;
     // cout << "(P * Q)(x) = " << p * q << endl;
