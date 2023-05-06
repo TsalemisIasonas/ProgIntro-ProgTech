@@ -31,7 +31,16 @@ protected:
             temp = temp->next;
         temp->next = new Term(exp, coeff, nullptr);
     }
-
+    void destroy(){
+        Term *current = head;
+        Term *next;
+        while (current != nullptr)
+        {
+            next = current->next;
+            delete current;
+            current = next;
+        }
+    }
 public:
     Polynomial()
     {
@@ -47,14 +56,7 @@ public:
     }
     ~Polynomial()
     {
-        Term *current = head;
-        Term *next;
-        while (current != nullptr)
-        {
-            next = current->next;
-            delete current;
-            current = next;
-        }
+        destroy();
     }
 
     Polynomial &operator=(const Polynomial &p);
@@ -87,7 +89,13 @@ public:
     }
 
     double evaluate(double x){
-        
+        double result = 0;
+        Term *temp = head;
+        while (temp!=nullptr){
+            result += (temp->coefficient) * pow(x,temp->exponent);
+            temp = temp->next;
+        }
+        return result;
     }
 
     friend Polynomial operator+(const Polynomial &p, const Polynomial &q);
