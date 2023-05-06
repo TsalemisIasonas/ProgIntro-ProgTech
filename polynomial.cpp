@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cmath>
-#include <string>
 using namespace std;
 
 class Polynomial
@@ -186,61 +185,64 @@ void addTerm(int e, int c) {
 
     friend ostream &operator<<(ostream &out, const Polynomial &p)
     {
-        string result;
         for (Term *i = p.head; i != nullptr; i = i->next)
         {
-            if (i->coefficient < 0)
+            if (i == p.head)
             {
-                result += " - ";
-            }
-            else if (i != p.head)
-            {
-                result += " + ";
-            }
+                if (i->coefficient == 1)
+                {
+                    out << "x^" << i->exponent;
+                }
+                else if (i->coefficient == 0)
+                    continue;
 
-            int abs_coeff = abs(i->coefficient);
-            if (abs_coeff == 1 && i->exponent != 0)
-            {
-                result += "x";
+                else if (i->coefficient < 0)
+                {
+                    out << "- " << abs(i->coefficient) << "x^" << i->exponent;
+                }
+                else
+                {
+                    out << abs(i->coefficient) << "x^" << i->exponent;
+                }
             }
             else
             {
-                result += to_string(abs_coeff);
-                if (i->exponent != 0)
+                if (i->coefficient == 1)
                 {
-                    result += "x";
+                    out << " + x^" << i->exponent;
+                }
+                else if (i->coefficient == 0)
+                    continue;
+
+                else if (i->coefficient < 0)
+                {
+                    out << " - " << abs(i->coefficient) << "x^" << i->exponent;
+                }
+                else
+                {
+                    out << " + " << abs(i->coefficient) << "x^" << i->exponent;
                 }
             }
-
-            if (i->exponent > 1)
-            {
-                result += "^" + to_string(i->exponent);
-            }
-            else if (i->exponent == 1)
-            {
-                result += "";
-            }
         }
-        out << result;
         return out;
     }
 };
 
-// int main()
-// {
-//     Polynomial p;    // 0
-//     p.addTerm(1, 3); // 3x
+int main()
+{
+    Polynomial p;    // 0
+    p.addTerm(1, 3); // 3x
 
-//     p.addTerm(2, 1);  // x^2
-//     p.addTerm(0, -1); // -1
+    p.addTerm(2, 1);  // x^2
+    p.addTerm(0, -1); // -1
 
-//     Polynomial q(p);  // x^2 + 3x - 1
-//     q.addTerm(1, -3); // -3x
+    Polynomial q(p);  // x^2 + 3x - 1
+    q.addTerm(1, -3); // -3x
 
-//     cout << "P(x) = " << p << endl;
-//     cout << "P(1) = " << p.evaluate(1) << endl;
-//     cout << "Q(x) = " << q << endl;
-//     cout << "Q(1) = " << q.evaluate(1) << endl;
-//     cout << "(P + Q)(x) = " << p + q << endl;
-//     cout << "(P * Q)(x) = " << p * q << endl;
-// }
+    cout << "P(x) = " << p << endl;
+    cout << "P(1) = " << p.evaluate(1) << endl;
+    cout << "Q(x) = " << q << endl;
+    cout << "Q(1) = " << q.evaluate(1) << endl;
+    cout << "(P + Q)(x) = " << p + q << endl;
+    cout << "(P * Q)(x) = " << p * q << endl;
+}
