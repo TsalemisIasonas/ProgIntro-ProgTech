@@ -1,38 +1,77 @@
 #include <string>
 #include <vector>
 #include <iostream>
+
 using namespace std;
 
-string longestCommonPrefix(vector<string> &strs)
-{
-    int prefixLen = 0;
-    for (int i = 0; i < min((strs[0]).length(),(strs[1]).length()); i++)
-    {
-            if ((strs[0])[i] == (strs[1])[i])
-            {
-                prefixLen++;
+vector<int> smallerNumbersThanCurrent(vector<int>& nums) {
+        vector<int> newNums;
+        for (int i=0; i<nums.size()-1; i++){
+            int count = 0;
+            for (int j=i+1; j<nums.size();j++){
+                if (nums[i] > nums[j]){
+                    count++;
+                }
             }
-            else{ break;}
-    }
-    cout << prefixLen << endl;
-    for (int i = 0; i< strs.size(); i++){
-        for (int j = 0; j< prefixLen; j++){
-            if (strs[i][j] != strs[0][j]){
-                prefixLen = prefixLen-j;
-                break;
-            }
+            newNums.push_back(count);
         }
+        newNums.push_back(0);
+        return newNums;
     }
-    cout << prefixLen << endl;
-    string prefix = "";
-    for (int i = 0; i < prefixLen; i++)
-    {
-        prefix += (strs[0])[i];
-    }
-    return prefixLen > 0 ? prefix : "";
-}
 
-int main(){
-    vector<string> strs = {"flower","flow","flight"};
-    cout << longestCommonPrefix(strs);
+// vector<int> quickSort(vector<int>& nums);
+
+// vector<int> smallerNumbersThanCurrent(vector<int> &nums)
+// {
+//     nums = quickSort(nums);
+//     int initialSize = nums.size();
+    
+//     for (int i: nums){
+//          nums.push_back(nums.size() - i);
+//     }
+//     nums.erase(nums.begin(),nums.begin()+initialSize);
+//     cout << endl;
+    
+//     return nums;
+// }
+
+// vector<int> quickSort(vector<int>& nums){
+//     if (nums.size() <= 1) {
+//         return nums;
+//     }
+    
+//     vector<int> less;
+//     vector<int> more;
+//     int pivot = nums[0];
+    
+//     for (int i = 1; i < nums.size(); i++){
+//         if (nums[i] < pivot) {
+//             less.push_back(nums[i]);
+//         } else {
+//             more.push_back(nums[i]);
+//         }
+//     }
+    
+//     vector<int> sortedLess = quickSort(less);
+//     vector<int> sortedMore = quickSort(more);
+//     sortedLess.push_back(pivot);
+//     sortedLess.insert(sortedLess.end(), sortedMore.begin(), sortedMore.end());
+    
+//     return sortedLess;
+// }
+
+int main()
+{
+    vector<int> ints = {5,2,6,1};
+    for (int i:smallerNumbersThanCurrent(ints)){
+        cout << i << " ";
+    }
+
+    
+//     vector<int> result = smallerNumbersThanCurrent(ints);
+    
+//     for (int i: result){
+//         cout << i << " ";
+//     }
+//     cout << endl;
 }
