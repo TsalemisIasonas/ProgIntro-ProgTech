@@ -96,14 +96,17 @@ private:
     }
 
     int getDepth(Node* currentNode, const string& s, int depth) {
-        if (currentNode == nullptr || currentNode->key == s) {
-            return (currentNode != nullptr) ? depth : 0;
+        if (currentNode == nullptr) {
+            return 0;
         }
 
         if (s < currentNode->key) {
             return getDepth(currentNode->left, s, depth + 1);
-        } else {
+        } else if (s > currentNode->key) {
             return getDepth(currentNode->right, s, depth + 1);
+        } else {
+            // Key found, return the current depth
+            return depth;
         }
     }
 
@@ -160,6 +163,7 @@ private:
             delete currentNode;
         }
     }
+    
     void printLexicon(ostream& out, const Node* currentNode) const {
         if (currentNode != nullptr) {
             printLexicon(out, currentNode->left);
@@ -168,4 +172,3 @@ private:
         }
     }
 };
-
