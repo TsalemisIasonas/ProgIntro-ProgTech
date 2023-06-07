@@ -45,7 +45,7 @@ public:
     }
 
     int depth(const string& s) {
-        return getDepth(root, s, 1);
+        return getDepth(root, s, 1)-1; //updated this line
     }
 
     void replace(const string& s1, const string& s2) {
@@ -57,6 +57,8 @@ public:
 
         removeNode(root, s1);
         insertOccurrences(s2, frequency);
+        int newDepth = depth(s2); //updated this line
+        cout << "Now the word ’" << s2 << "’ is found at depth " << newDepth << endl; //updated this line
     }
 
     friend ostream& operator<<(ostream& out, const lexicon& l) {
@@ -186,5 +188,4 @@ int main() {
  l.replace("boy", "wolf");
  cout << "After replacement:\n";
  cout << l;
- cout << "Now the word ’and’ is found at depth " << l.depth("and") << endl;
- }
+}
