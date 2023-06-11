@@ -5,28 +5,19 @@ using namespace std;
 
 class lexicon {
 private:
-    class Node {
-    public:
-        string key;
+    struct Node {
+        string word;
+        int frequency;
         Node* left;
         Node* right;
-        int freq;
 
-        Node(const string& k) {
-            key = k;
-            left = nullptr;
-            right = nullptr;
-            freq = 1;
-        }
+        Node(const string& w) : word(w), frequency(1), left(nullptr), right(nullptr) {}
     };
 
     Node* root;
 
 public:
-    lexicon() {
-        root = nullptr;
-    }
-
+    lexicon() : root(nullptr) {}
     ~lexicon() {
         clear(root);
     }
@@ -35,140 +26,132 @@ public:
         if (root == nullptr) {
             root = new Node(s);
         } else {
-            insertRecursive(root, s);
+            insertHelper(root, s);
         }
     }
 
     int lookup(const string& s) const {
         Node* node = findNode(root, s);
-        return (node != nullptr) ? node->freq : 0;
+        if (node == nullptr) {
+            return 0;
+        } else {
+            return node->frequency;
+        }
     }
 
     int depth(const string& s) {
-        return getDepth(root, s, 1);
+        return depthHelper(root, s, 0);
     }
 
     void replace(const string& s1, const string& s2) {
-        int frequency = lookup(s1);
-
-        if (frequency == 0) {
-            return; 
-        }
-
-        removeNode(root, s1);
-        insertOccurrences(s2, frequency);
+        replaceHelper(root, s1, s2);
     }
 
     friend ostream& operator<<(ostream& out, const lexicon& l) {
-        l.printLexicon(out, l.root);
+        l.printInOrder(out, l.root);
         return out;
     }
 
 private:
-    void insertRecursive(Node* currentNode, const string& s) {
-        if (s < currentNode->key) {
-            if (currentNode->left == nullptr) {
-                currentNode->left = new Node(s);
-            } else {
-                insertRecursive(currentNode->left, s);
-            }
-        } else if (s > currentNode->key) {
-            if (currentNode->right == nullptr) {
-                currentNode->right = new Node(s);
-            } else {
-                insertRecursive(currentNode->right, s);
-            }
-        } else {
-            currentNode->freq++;
+    void clear(Node* node) {
+        if (node != nullptr) {
+            clear(node->left);
+            clear(node->right);
+            delete node;
         }
     }
 
-    Node* findNode(Node* currentNode, const string& s) const {
-        if (currentNode == nullptr || currentNode->key == s) {
-            return currentNode;
-        }
-
-        if (s < currentNode->key) {
-            return findNode(currentNode->left, s);
+    void insertHelper(Node* node, const string& s) {
+        if (s < node->word) {
+            if (node->left == nullptr) {
+                node->left = new Node(s);
+            } else {
+                insertHelper(node->left, s);
+            }
+        } else if (s > node->word) {
+            if (node->right == nullptr) {
+                node->right = new Node(s);
+            } else {
+                insertHelper(node->right, s);
+            }
         } else {
-            return findNode(currentNode->right, s);
+            node->frequency++;
         }
     }
 
-    int getDepth(Node* currentNode, const string& s, int depth) {
-        if (currentNode == nullptr) {
-            return 0;
-        }
-
-        if (s < currentNode->key) {
-            return getDepth(currentNode->left, s, depth + 1);
-        } else if (s > currentNode->key) {
-            return getDepth(currentNode->right, s, depth + 1);
+    Node* findNode(Node* node, const string& s) const {
+        if (node == nullptr || node->word == s) {
+            return node;
+        } else if (s < node->word) {
+            return findNode(node->left, s);
         } else {
-            // Key found, return the current depth
+            return findNode(node->right, s);
+        }
+    }
+
+    int depthHelper(Node* node, const string& s, int depth) {
+        if (node == nullptr) {
+            return -1;
+        } else if (node->word == s) {
             return depth;
+        } else if (s < node->word) {
+            return depthHelper(node->left, s, depth + 1);
+        } else {
+            return depthHelper(node->right, s, depth + 1);
         }
     }
 
-    Node* removeNode(Node* currentNode, const string& s) {
-        if (currentNode == nullptr) {
-            return currentNode;
+    Node* findMinNode(Node* node) {
+        while (node->left != nullptr) {
+            node = node->left;
         }
+        return node;
+    }
 
-        if (s < currentNode->key) {
-            currentNode->left = removeNode(currentNode->left, s);
-        } else if (s > currentNode->key) {
-            currentNode->right = removeNode(currentNode->right, s);
+    void replaceHelper(Node*& node, const string& s1, const string& s2) {
+        if (node == nullptr) {
+            return;
+        } else if (s1 < node->word) {
+            replaceHelper(node->left, s1, s2);
+        } else if (s1 > node->word) {
+            replaceHelper(node->right, s1, s2);
         } else {
-            if (currentNode->freq > 1) {
-                currentNode->freq--;
-            } else {
-                if (currentNode->left == nullptr) {
-                    Node* temp = currentNode->right;
-                    delete currentNode;
-                    return temp;
-                } else if (currentNode->right == nullptr) {
-                    Node* temp = currentNode->left;
-                    delete currentNode;
-                    return temp;
-                }
-
-                Node* smallestNode = findSmallestNode(currentNode->right);
-                currentNode->key = smallestNode->key;
-                currentNode->freq = smallestNode->freq;
-                currentNode->right = removeNode(currentNode->right, smallestNode->key);
+            // s1 found
+            int frequency = node->frequency;
+            deleteNode(node);
+            if (frequency > 0) {
+                insertHelper(root, s2);
+                Node* newNode = findNode(root, s2);
+                newNode->frequency = frequency;
             }
         }
-
-        return currentNode;
     }
 
-    Node* findSmallestNode(Node* currentNode) const {
-        while (currentNode->left != nullptr) {
-            currentNode = currentNode->left;
-        }
-        return currentNode;
-    }
-
-    void insertOccurrences(const string& s, int frequency) {
-        for (int i = 0; i < frequency; i++) {
-            insert(s);
-        }
-    }
-
-    void clear(Node* currentNode) {
-        if (currentNode != nullptr) {
-            clear(currentNode->left);
-            clear(currentNode->right);
-            delete currentNode;
+    void deleteNode(Node*& node) {
+        if (node->left == nullptr && node->right == nullptr) {
+            delete node;
+            node = nullptr;
+        } else if (node->left == nullptr) {
+            Node* temp = node;
+            node = node->right;
+            delete temp;
+        } else if (node->right == nullptr) {
+            Node* temp = node;
+            node = node->left;
+            delete temp;
+        } else {
+            Node* successor = findMinNode(node->right);
+            node->word = successor->word;
+            node->frequency = successor->frequency;
+            deleteNode(successor);
         }
     }
-    
-    void printLexicon(ostream& out, const Node* currentNode) const {
-        if (currentNode != nullptr) {
-            printLexicon(out, currentNode->left);
-            out << currentNode->key << " " << currentNode->freq << endl;
-            printLexicon(out, currentNode->right);
+
+    void printInOrder(ostream& out, Node* node) const {
+        if (node != nullptr) {
+            printInOrder(out, node->left);
+            out << node->word << node->frequency << endl;
+            printInOrder(out, node->right);
         }
     }
 };
@@ -181,21 +164,15 @@ int main() {
     l.insert("the");
     l.insert("wolf");
 
-    int the_freq = l.lookup("the");
-    cout << "The word 'the' is found " << the_freq << " time";
-    if (the_freq > 1) {
-        cout << "s";
-    }
-    cout << endl;
-
-    cout << "The word 'and' is found at depth " << l.depth("and") - 1 << endl;
-    cout << "and " << l.lookup("and") << endl;
-    cout << "boy " << l.lookup("boy") << endl;
-    cout << "the " << l.lookup("the") << endl;
-    cout << "wolf " << l.lookup("wolf") << endl;
+    cout << "The word 'the' is found " << l.lookup("the") << " time(s)" << endl;
+    cout << "The word 'and' is found at depth " << l.depth("and") << endl;
+    cout << l;
 
     l.replace("boy", "wolf");
+
     cout << "After replacement:\n";
     cout << l;
-    cout << "Now the word 'and' is found at depth " << l.depth("and") - 1 << endl;
+    cout << "Now the word 'and' is found at depth " << l.depth("and") << endl;
+
+    return 0;
 }
